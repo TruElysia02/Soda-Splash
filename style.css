@@ -1,0 +1,438 @@
+body {
+    font-family: 'Press Start 2P', cursive;
+    background-color: #222;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.game-container {
+    display: flex;
+    gap: 50px;
+    align-items: flex-start;
+    justify-content: center;
+    padding-left: 100px;
+}
+
+.score-board {
+    background-color: #333;
+    border: 3px solid #555;
+    padding: 20px;
+    min-width: 250px;
+    order: 2;
+    /* 像素抖动效果 */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    box-shadow: 0 0 0 2px #222;
+}
+
+.score-board .game-title {
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Press Start 2P', cursive;
+    text-shadow: 2px 2px 0 #000;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #ff6600;
+    /* 像素抖动效果 */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+.score-board .score-display,
+.score-board .combo-display,
+.score-board .high-score,
+.score-board .timer {
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'Press Start 2P', cursive;
+    text-shadow: 1px 1px 0 #000;
+    /* 像素抖动效果 */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+#score, #combo, #high-score, #timer {
+    color: #ffcc00;
+}
+
+/* 分数抖动效果 */
+@keyframes scoreShake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    50% { transform: translateX(2px); }
+    75% { transform: translateX(-2px); }
+    100% { transform: translateX(0); }
+}
+
+.score-shake {
+    animation: scoreShake 0.3s ease-in-out;
+}
+
+.game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    order: 1;
+}
+
+#app {
+    position: relative;
+    width: 480px;
+    height: 640px;
+    background-color: #444;
+    border: 3px solid #666;
+    overflow: hidden;
+    /* 像素抖动效果 */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    /* 直角阴影 */
+    box-shadow: 0 0 0 2px #222, 5px 5px 0 0 rgba(0, 0, 0, 0.5);
+}
+
+/* 确保游戏方块填充整个游戏区域 */
+#app > div {
+    position: absolute;
+}
+
+#btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #555;
+    border: 2px solid #777;
+    color: #fff;
+    border-radius: 5px;
+    transition: all 0.3s;
+    font-family: 'Press Start 2P', cursive;
+}
+
+#btn:hover {
+    background-color: #666;
+    border-color: #888;
+}
+
+#btn:active {
+    transform: scale(0.95);
+}
+
+#test-effect {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #ff6600;
+    border: 2px solid #ff9900;
+    color: #fff;
+    border-radius: 5px;
+    transition: all 0.3s;
+    font-family: 'Press Start 2P', cursive;
+}
+
+#test-effect:hover {
+    background-color: #ff9900;
+    border-color: #ffcc00;
+}
+
+#test-effect:active {
+    transform: scale(0.95);
+}
+
+/* 像素风格的方块 */
+#app div {
+    box-sizing: border-box;
+    border: 5px solid #888;
+    transition: transform 0.3s, box-shadow 0.3s;
+    image-rendering: pixelated;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    /* 添加阴影效果 */
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+/* 方块鼠标悬停效果 */
+#app div:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    z-index: 10;
+}
+
+/* 方块拖动时的样式 */
+#app div.dragging {
+    z-index: 20;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+}
+
+/* 防止整个页面文本选中 */
+body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* 连击特效 */
+.combo-effect {
+    position: absolute;
+    color: #ffcc00;
+    font-size: 20px;
+    font-weight: bold;
+    animation: comboAnimation 1s ease-out forwards;
+    pointer-events: none;
+    z-index: 100;
+}
+
+@keyframes comboAnimation {
+    0% {
+        transform: scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5) translateY(-30px);
+        opacity: 0;
+    }
+}
+
+/* 消除动画 */
+@keyframes eliminateAnimation {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(1.8);
+        opacity: 0;
+    }
+}
+
+/* 像素爆炸效果 */
+@keyframes pixelExplosion {
+    0% {
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+    70% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(var(--target-x, 0), var(--target-y, 0));
+        opacity: 0;
+    }
+}
+
+.eliminate-effect {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+    z-index: 100;
+    animation: eliminateAnimation 0.5s ease-out forwards;
+    /* 像素风格的圆 - 使用多个小方块组成 */
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    /* 使用伪元素创建像素风格的圆 */
+}
+
+.eliminate-effect::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+.eliminate-effect::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+/* 火焰效果 */
+@keyframes flameAnimation {
+    0% {
+        background-color: #ff6600;
+        box-shadow: 0 0 10px #ff3300;
+    }
+    25% {
+        background-color: #ff9900;
+        box-shadow: 0 0 15px #ff6600;
+    }
+    50% {
+        background-color: #ffcc00;
+        box-shadow: 0 0 20px #ff9900;
+    }
+    75% {
+        background-color: #ff9900;
+        box-shadow: 0 0 15px #ff6600;
+    }
+    100% {
+        background-color: #ff6600;
+        box-shadow: 0 0 10px #ff3300;
+    }
+}
+
+.score-flame {
+    animation: flameAnimation 0.8s ease-in-out;
+}
+
+/* 像素烟花效果 */
+@keyframes pixelFirework {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    25% {
+        transform: translateY(-15px) scale(1.2);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-30px) scale(1);
+        opacity: 0.8;
+    }
+    75% {
+        transform: translateY(-45px) scale(0.8);
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateY(-60px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* 像素火焰燃烧效果 */
+@keyframes pixelFlame {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    20% {
+        transform: translateY(-8px) scale(1.2);
+        opacity: 0.9;
+    }
+    40% {
+        transform: translateY(-16px) scale(1.1);
+        opacity: 0.8;
+    }
+    60% {
+        transform: translateY(-24px) scale(1);
+        opacity: 0.7;
+    }
+    80% {
+        transform: translateY(-32px) scale(0.9);
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateY(-40px) scale(0.7);
+        opacity: 0;
+    }
+}
+
+/* 像素粒子效果 */
+.pixel-particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #ffcc00;
+    pointer-events: none;
+    z-index: 200;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    box-shadow: 0 0 4px rgba(255, 204, 0, 0.8);
+}
+
+/* 像素火焰粒子 */
+.pixel-flame {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: #ff6600;
+    pointer-events: none;
+    z-index: 200;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    box-shadow: 0 0 4px rgba(255, 102, 0, 0.8);
+}
+
+.pixel-explosion {
+    position: absolute;
+    background-color: #ffffff;
+    pointer-events: none;
+    z-index: 101;
+    animation: pixelExplosion 0.8s ease-out forwards;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* 分数闪烁效果 */
+.score-flash {
+    animation: scoreFlash 0.5s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.score-flash::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 204, 0, 0.3) 50%, transparent 70%);
+    animation: scoreFlashGlow 0.5s ease-in-out;
+    z-index: 1;
+}
+
+@keyframes scoreFlash {
+    0%, 100% {
+        background-color: #333;
+        border-color: #555;
+        box-shadow: 0 0 0 2px #222;
+    }
+    50% {
+        background-color: #444;
+        border-color: #ffcc00;
+        box-shadow: 0 0 15px #ff9900, 0 0 5px #ffcc00;
+    }
+}
+
+@keyframes scoreFlashGlow {
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
